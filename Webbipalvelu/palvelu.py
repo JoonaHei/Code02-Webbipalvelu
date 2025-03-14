@@ -12,14 +12,14 @@ def app(environ, respond):
     params = dict(qc.split("=") for qc in query_string.split("&") if "=" in qc)
     
     nimi = params.get("nimi", "").replace("+", " ")  # Poistetaan URL-enkoodaus (+ -> väli)
-    ika = params.get("henkilötunnus", "")
+    henkilötunnus = params.get("henkilötunnus", "")
 
-    if nimi and ika:
+    if nimi and henkilötunnus:
         # Tulostetaan palvelimen terminaaliin
-        print(f"Käyttäjän nimi: {nimi}, Ikä: {ika}")
+        print(f"Käyttäjän nimi: {nimi}, Henkilötunnus: {henkilötunnus}")
 
         # Näytetään sivulla käyttäjän syöttämät tiedot
-        yield f"<p>Hei, {nimi}! Henkilötunnuksesi on {ika}.</p>".encode('utf-8')
+        yield f"<p>Hei, {nimi}! Henkilötunnuksesi on {henkilötunnus}.</p>".encode('utf-8')
     else:
         # Näytetään lomake, jos tietoja ei ole vielä syötetty
         yield """
@@ -27,8 +27,8 @@ def app(environ, respond):
             <label for="nimi">Nimesi:</label>
             <input type="text" id="nimi" name="nimi" required>
             <br>
-            <label for="ika">Ikäsi:</label>
-            <input type="number" id="ika" name="ika" required>
+            <label for="henkilötunnus">Henkilötunnus:</label>
+            <input type="text" id="henkilötunnus" name="henkilötunnus" required>
             <br>
             <input type="submit" value="Lähetä">
         </form>
