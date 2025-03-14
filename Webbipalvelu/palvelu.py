@@ -6,25 +6,31 @@ Tämä on Osa Code03 kurssia 13.3.2025
 """
 def app(environ, respond):
     respond('200 OK', [('Content-type', 'text/html; charset=utf-8')])
-    
-    # Tarkistetaan, onko nappia painettu
+
+    # Haetaan käyttäjän syöttämät tiedot
     query_string = environ.get("QUERY_STRING", "")
-    nappi_painettu = "napin_arvo=1" in query_string  # Tarkistaa, onko lomake lähetetty
+    params = dict(qc.split("=") for qc in query_string.split("&") if "=" in qc)
+    
+    nimi = params.get("nimi", "").replace("+", " ")  # Poistetaan URL-enkoodaus (+ -> väli)
+    ika = params.get("ika", "")
 
-    yield "<p>Älä katso tänne!</p>".encode('utf-8')
+    if nimi and ika:
+        # Tulostetaan palvelimen terminaaliin
+        print(f"Käyttäjän nimi: {nimi}, Ikä: {ika}")
 
-    polku = environ.get("PATH_INFO", "").strip('/')
-    salanimi = polku.replace("a", "aca").replace("i", "hani").replace("n", "Nano")
-
-    yield f"<p>Salainen nimesi on: <b>{salanimi}</b></p>".encode('utf-8')
-
-    if nappi_painettu:
-        yield "<p><b>Oikeasti! Saat 5€! (tai sitten et)</b></p>".encode('utf-8')
+        # Näytetään sivulla käyttäjän syöttämät tiedot
+        yield f"<p>Hei, {nimi}! Olet {ika} vuotta vanha.</p>".encode('utf-8')
     else:
+        # Näytetään lomake, jos tietoja ei ole vielä syötetty
         yield """
         <form method="GET">
-            <input type="hidden" name="napin_arvo" value="1">
-            <input type="submit" value="Paina niin saat 5€">
+            <label for="nimi">Nimesi:</label>
+            <input type="text" id="nimi" name="nimi" required>
+            <br>
+            <label for="ika">Ikäsi:</label>
+            <input type="number" id="ika" name="ika" required>
+            <br>
+            <input type="submit" value="Lähetä">
         </form>
         """.encode("utf-8")
 
